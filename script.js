@@ -1,13 +1,14 @@
 // data storage
 let inventoryItems = new Map();
 let currentShipment = new Map();
+let prevShipments = new Map();
 let selectedItemId = null;
 
 // html actions
 let nameField = document.getElementById("item-name");
 let qtyField = document.getElementById("item-qty");
 
-// New/Update Inventory Controls
+// Create/Update Inventory Form Controls
 function validateItemForm() {
 	if (inventoryItems.size && !selectedItemId) {
 		for (const item of inventoryItems.values()) {
@@ -182,4 +183,13 @@ function checkBoundaries(e) {
 	} else { 
 		return;
 	}
+}
+
+function generateShipment() {
+	// #1 - generate curShip obj and save to prev ship
+}
+
+
+function displayPrevShipments() {
+	// map prevShipments into ListItems and display in HTML
 }

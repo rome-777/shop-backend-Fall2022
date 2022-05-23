@@ -3,16 +3,16 @@ html, body {
   width: 100%;
 }
 
-.table { width: 75%; }
+.table { 
+	table-layout: fixed;
+	overflow: hidden;
+	width: 60%; 
+	border-spacing: 5px 5px;
+}
 
 .table th {
 	text-align: left; 
 	border-bottom: 1px solid #0f0f0f;
-}
-
-.table td {
-  text-align: left; 
-  margin-top: 0.5em;
 }
 
 h2 {
