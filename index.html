@@ -2,10 +2,10 @@
 <html>
 
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width">
-  <title>Roman's Shopify Backend</title>
-  <link href="style.css" rel="stylesheet" type="text/css" />
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Roman's Shopify Backend</title>
+	<link href="style.css" rel="stylesheet" type="text/css" />
 </head>
 
 <body>
@@ -14,39 +14,38 @@
 		<form onsubmit="event.preventDefault(); itemFormSubmit();">
 			<input type="text" id="item-name" placeholder="Enter item name" required>
 			<input type="number" id="item-qty" placeholder="Enter quantity" required min=0>
-    	<input type="submit" class="button submit" value="Create or Update" class="btn btn-primary">
+			<input type="submit" class="button submit" value="Submit">
 		</form>
 	</div>
+	
 	<div id="inventory-list">
 		<h2>List of Inventory</h2>
-			<table class="list" id="inventory-list">
-				<thead>
-						<tr>
-								<th>Item Name</th>
-								<th>Quantity</th>
-
-						</tr>
-				</thead>
-				<tbody id='inventory-list-item'>
-				</tbody>
-      </table>
+		<table class="list" id="inventory-list">
+			<thead>
+				<tr>
+					<th>Item Name</th>
+					<th>Quantity</th>
+				</tr>
+			</thead>
+			<tbody id='inventory-list-item'>
+			</tbody>
+		</table>
 	</div>
-	
-<div >
+
+	<div>
 		<h2>Current Shipment</h2>
-			<table class="list" id="shipment">
-				<thead>
-						<tr>
-								<th>Item Name</th>
-								<th>Quantity</th>
-
-						</tr>
-				</thead>
-				<tbody id='inventory-list-item'>
-				</tbody>
-      </table>
+		<table class="list" id="shipment">
+			<thead>
+				<tr>
+					<th>Item Name</th>
+					<th>Quantity</th>
+				</tr>
+			</thead>
+			<tbody id='inventory-list-item'>
+			</tbody>
+		</table>
 	</div>
-	
+
 
 
 	<script src="script.js"></script>

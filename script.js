@@ -1,15 +1,13 @@
 let inventoryItems = new Map();
+let currentShipment = new Map();
 let selectedItemId = null;
 let nameField = document.getElementById("item-name");
 let qtyField = document.getElementById("item-qty");
-let currentShipment = new Map(); 
-function validateItemForm() {
-	console.log('validating', nameField.value, qtyField.value); 
 
+function validateItemForm() {
+	console.log('validating', nameField.value, qtyField.value);
 	return true;
 }
-// make sure same name items can't be added
-// make sure qty is provided 
 
 function getItemFormData() {
 	const itemData = {};
@@ -23,16 +21,14 @@ function itemFormSubmit() {
 		const itemData = getItemFormData();
 		if (selectedItemId == null) {
 			createItem(itemData);
-			console.log(...inventoryItems.values());
-		} else { 
+		} else {
 			updateItem(itemData);
 		}
-		const currentData = inventoryItems.get(selectedItemId);
-
 		nameField.value = null;
-		qtyField.value = null; 
+		qtyField.value = null;
 	}
 }
+
 function generateId() {
 	return Math.floor(Math.random() * 1000)
 }
@@ -42,12 +38,12 @@ function createItem(data) {
 	inventoryItems.set(id, data);
 	displayInventoryTable();
 }
-	
+
 function updateItem(data) {
 	const updateItem = inventoryItems.get(selectedItemId);
 	updateItem.name = data.name;
-	updateItem.qty = data.qty; 
-	inventoryItems.set(selectedItemId, updateItem); 
+	updateItem.qty = data.qty;
+	inventoryItems.set(selectedItemId, updateItem);
 	selectedItemId = null;
 	displayInventoryTable();
 }
@@ -60,127 +56,127 @@ function handleEditButton(id) {
 }
 
 function deleteItem(id) {
-	inventoryItems.delete(id); 
-	displayInventoryTable(); 
+	inventoryItems.delete(id);
+	displayInventoryTable();
 }
 
-function displayInventoryTable(){
+function displayInventoryTable() {
 	let table = document.getElementById("inventory-list-item");
 	table.innerHTML = '';
 	if (inventoryItems) {
 		for (const [key, data] of inventoryItems) {
 			let row = document.createElement('tr');
-			
+
 			//data to display
 			let cellName = document.createElement('td');
 			let name = document.createTextNode(data.name);
-			cellName.appendChild(name); 
+			cellName.appendChild(name);
 			let cellQty = document.createElement('td');
-			let qty = document.createTextNode(data.qty); 
-			cellQty.appendChild(qty);	
-			row.appendChild(cellName); 
-			row.appendChild(cellQty); 
-			
-      //delete button
+			let qty = document.createTextNode(data.qty);
+			cellQty.appendChild(qty);
+			row.appendChild(cellName);
+			row.appendChild(cellQty);
+
+			//delete button
 			const deleteButton = document.createElement('input');
-      deleteButton.setAttribute('type', 'button');
-      deleteButton.setAttribute('value', 'Delete');
-			deleteButton.setAttribute('onclick', 'deleteItem('+key+')');
-			row.appendChild(deleteButton); 
+			deleteButton.setAttribute('type', 'button');
+			deleteButton.setAttribute('value', 'Delete');
+			deleteButton.setAttribute('onclick', 'deleteItem(' + key + ')');
+			row.appendChild(deleteButton);
 
 			//edit button 
 			const updateButton = document.createElement('input');
-	   	updateButton.setAttribute('type', 'button');
-      updateButton.setAttribute('value', 'Edit');
-			updateButton.setAttribute('onclick', 'handleEditButton('+key+')');
-			row.appendChild(updateButton); 
+			updateButton.setAttribute('type', 'button');
+			updateButton.setAttribute('value', 'Edit');
+			updateButton.setAttribute('onclick', 'handleEditButton(' + key + ')');
+			row.appendChild(updateButton);
 
 			//add to shipment
 			const shipmentQty = document.createElement('input');
-	   	shipmentQty.setAttribute('type', 'number');
-			shipmentQty.setAttribute('max', data.qty); 
-			shipmentQty.setAttribute('min', 0); 
+			shipmentQty.setAttribute('type', 'number');
+			shipmentQty.setAttribute('max', data.qty);
+			shipmentQty.setAttribute('min', 0);
+
 			const shipmentButton = document.createElement('input');
-	   	shipmentButton.setAttribute('type', 'button');
-      shipmentButton.setAttribute('value', 'Add to Shipment');
+			shipmentButton.setAttribute('type', 'button');
+			shipmentButton.setAttribute('value', 'Add to Shipment');
 			shipmentButton.setAttribute('onclick', `addToShipment(${key})`);
-			// row.appendChild(shipmentQty); 
-			row.appendChild(shipmentButton); 			table.appendChild(row); 
+			row.appendChild(shipmentButton); table.appendChild(row);
 		}
 	}
 }
+
 function addToShipment(id){
-	console.log('adding to shipment', id); 
-	if(!currentShipment.get(id)){
-		
-	const shipmentData = {};
-	shipmentData['name'] = inventoryItems.get(id).name;
-	shipmentData['qty'] =1; 
-	currentShipment.set(id,shipmentData );
+	console.log('adding to shipment', id);
+	if (!currentShipment.get(id)) {
+
+		const shipmentData = {};
+		shipmentData['name'] = inventoryItems.get(id).name;
+		shipmentData['qty'] = 1;
+		currentShipment.set(id, shipmentData);
 	}
 	displayShipmentTable();
 }
 
-function deleteFromShipment(id){
+function deleteFromShipment(id) {
 	currentShipment.delete(id);
-	displayShipmentTable(); 
+	displayShipmentTable();
 }
 
-function decreaseShipment(id){
-	if(currentShipment.get(id).qty>0){
-		currentShipment.get(id).qty--; 
+function decreaseShipment(id) {
+	if (currentShipment.get(id).qty > 0) {
+		currentShipment.get(id).qty--;
 	}
 	displayShipmentTable()
 }
 
-function increaseShipment(id){
-	if(currentShipment.get(id).qty<inventoryItems.get(id).qty){
-	currentShipment.get(id).qty++; 
+function increaseShipment(id) {
+	if (currentShipment.get(id).qty < inventoryItems.get(id).qty) {
+		currentShipment.get(id).qty++;
 	}
-	displayShipmentTable(); 
+	displayShipmentTable();
 }
-function displayShipmentTable(){
+
+function displayShipmentTable() {
 	let table = document.getElementById("shipment");
 	table.innerHTML = '';
 	if (currentShipment) {
 		for (const [key, data] of currentShipment) {
 			let row = document.createElement('tr');
-			
+
 			//data to display
 			let cellName = document.createElement('td');
 			let name = document.createTextNode(data.name);
-			cellName.appendChild(name); 
+			cellName.appendChild(name);
 			let cellQty = document.createElement('td');
-			let qty = document.createTextNode(data.qty); 
-			cellQty.appendChild(qty);	
-			row.appendChild(cellName); 
-			row.appendChild(cellQty); 
-			
-      //delete button
+			let qty = document.createTextNode(data.qty);
+			cellQty.appendChild(qty);
+			row.appendChild(cellName);
+			row.appendChild(cellQty);
+
+			//delete button
 			const deleteButton = document.createElement('input');
-      deleteButton.setAttribute('type', 'button');
-      deleteButton.setAttribute('value', 'Delete');
-			deleteButton.setAttribute('onclick', 'deleteFromShipment('+key+')');
-			row.appendChild(deleteButton); 
+			deleteButton.setAttribute('type', 'button');
+			deleteButton.setAttribute('value', 'Delete');
+			deleteButton.setAttribute('onclick', 'deleteFromShipment(' + key + ')');
+			row.appendChild(deleteButton);
 
 			//increment button 
 			const increaseButton = document.createElement('input');
-	   	increaseButton.setAttribute('type', 'button');
-      increaseButton.setAttribute('value', 'Increase');
-			increaseButton.setAttribute('onclick', 'increaseShipment('+key+')');
-			row.appendChild(increaseButton); 
+			increaseButton.setAttribute('type', 'button');
+			increaseButton.setAttribute('value', 'Increase');
+			increaseButton.setAttribute('onclick', 'increaseShipment(' + key + ')');
+			row.appendChild(increaseButton);
 
 			//decrement button 
 			const decreaseButton = document.createElement('input');
-	   	decreaseButton.setAttribute('type', 'button');
-      decreaseButton.setAttribute('value', 'Decrease');
-			decreaseButton.setAttribute('onclick', 'decreaseShipment('+key+')');
-			row.appendChild(decreaseButton); 
-			table.appendChild(row); 
+			decreaseButton.setAttribute('type', 'button');
+			decreaseButton.setAttribute('value', 'Decrease');
+			decreaseButton.setAttribute('onclick', 'decreaseShipment(' + key + ')');
+			row.appendChild(decreaseButton);
+			table.appendChild(row);
 		}
 	}
-	console.log(table);
-
 }
 displayInventoryTable();
 

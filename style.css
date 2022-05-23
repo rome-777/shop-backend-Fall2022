@@ -3,32 +3,7 @@ html, body {
   width: 100%;
 }
 
-.button {
-  display: inline-block;
-  padding: 10px 10px;
-  font-size: 12px;
-  cursor: pointer;
-  text-align: center;
-  color: #fff;
-  border: none;
-  border-radius: 15px;
-}
-
-.button:active {
-  box-shadow: 0 3px #a8a8a8;
-  transform: translateY(4px);
-}
-
-.submit {
-  background-color: #5bd25f;
-}
-.submit:hover {background-color: #3caa3f}
-
-.delete {
-  background-color: #dc5b5b;
-}
-.delete:hover {background-color: #af3c3c}
-
 table {
-  border: 1px solid;
+	width: 40%;
+	text-align: center
 }
