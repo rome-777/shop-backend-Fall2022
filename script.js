@@ -1,18 +1,29 @@
+// data storage
 let inventoryItems = new Map();
 let currentShipment = new Map();
 let selectedItemId = null;
+
+// html actions
 let nameField = document.getElementById("item-name");
 let qtyField = document.getElementById("item-qty");
 
+// New/Update Inventory Controls
 function validateItemForm() {
-	console.log('validating', nameField.value, qtyField.value);
+	if (inventoryItems.size && !selectedItemId) {
+		for (const item of inventoryItems.values()) {
+			if (item.name === nameField.value) {
+				alert('Item already created. Please use the edit button to update');
+				return false;
+			}
+		}
+	}
 	return true;
 }
 
 function getItemFormData() {
 	const itemData = {};
-	itemData['name'] = document.getElementById("item-name").value;
-	itemData['qty'] = document.getElementById("item-qty").value;
+	itemData['name'] = nameField.value;
+	itemData['qty'] = qtyField.value;
 	return itemData;
 }
 
@@ -48,6 +59,51 @@ function updateItem(data) {
 	displayInventoryTable();
 }
 
+// Generate item inventory table
+function displayInventoryTable() {
+	let table = document.getElementById("inventory-list");
+	table.innerHTML = '';
+	if (inventoryItems) {
+		for (const [key, data] of inventoryItems) {
+			// create item name column
+			const cellName = document.createElement('td');
+			const name = document.createTextNode(data.name);
+			cellName.appendChild(name);
+			// create item quantity column
+			const cellQty = document.createElement('td');
+			const qty = document.createTextNode(data.qty);
+			cellQty.appendChild(qty);
+			// create delete button
+			const deleteButton = document.createElement('input');
+			deleteButton.setAttribute('type', 'button');
+			deleteButton.setAttribute('value', 'Delete');
+			deleteButton.setAttribute('onclick', `deleteItem(${key})`);
+			// create edit button 
+			const updateButton = document.createElement('input');
+			updateButton.setAttribute('type', 'button');
+			updateButton.setAttribute('value', 'Edit');
+			updateButton.setAttribute('onclick', `handleEditButton(${key})`);
+			// create 'add to shipment' button
+			const shipmentButton = document.createElement('input');
+			shipmentButton.setAttribute('type', 'button');
+			shipmentButton.setAttribute('value', 'Add to Shipment');
+			shipmentButton.setAttribute('onclick', `addToShipment(${key})`);
+			// create action buttons column
+			const cellActions = document.createElement('td');
+			cellActions.appendChild(deleteButton);
+			cellActions.appendChild(updateButton);
+			cellActions.appendChild(shipmentButton); 
+			// create row
+			const row = document.createElement('tr');
+			row.appendChild(cellName);
+			row.appendChild(cellQty);
+			row.appendChild(cellActions);
+			table.appendChild(row);
+		}
+	}
+}
+
+// Inventory table actions
 function handleEditButton(id) {
 	selectedItemId = id;
 	const currentData = inventoryItems.get(selectedItemId);
@@ -56,125 +112,74 @@ function handleEditButton(id) {
 }
 
 function deleteItem(id) {
-	inventoryItems.delete(id);
-	displayInventoryTable();
-}
-
-function displayInventoryTable() {
-	let table = document.getElementById("inventory-list-item");
-	table.innerHTML = '';
-	if (inventoryItems) {
-		for (const [key, data] of inventoryItems) {
-			let row = document.createElement('tr');
-
-			//data to display
-			let cellName = document.createElement('td');
-			let name = document.createTextNode(data.name);
-			cellName.appendChild(name);
-			let cellQty = document.createElement('td');
-			let qty = document.createTextNode(data.qty);
-			cellQty.appendChild(qty);
-			row.appendChild(cellName);
-			row.appendChild(cellQty);
-
-			//delete button
-			const deleteButton = document.createElement('input');
-			deleteButton.setAttribute('type', 'button');
-			deleteButton.setAttribute('value', 'Delete');
-			deleteButton.setAttribute('onclick', 'deleteItem(' + key + ')');
-			row.appendChild(deleteButton);
-
-			//edit button 
-			const updateButton = document.createElement('input');
-			updateButton.setAttribute('type', 'button');
-			updateButton.setAttribute('value', 'Edit');
-			updateButton.setAttribute('onclick', 'handleEditButton(' + key + ')');
-			row.appendChild(updateButton);
-
-			//add to shipment
-			const shipmentQty = document.createElement('input');
-			shipmentQty.setAttribute('type', 'number');
-			shipmentQty.setAttribute('max', data.qty);
-			shipmentQty.setAttribute('min', 0);
-
-			const shipmentButton = document.createElement('input');
-			shipmentButton.setAttribute('type', 'button');
-			shipmentButton.setAttribute('value', 'Add to Shipment');
-			shipmentButton.setAttribute('onclick', `addToShipment(${key})`);
-			row.appendChild(shipmentButton); table.appendChild(row);
-		}
+	if (!selectedItemId) {
+		inventoryItems.delete(id);
+		displayInventoryTable();
+	} else {
+		alert('Cannot delete item while editing');
+		return;
 	}
 }
 
 function addToShipment(id){
 	if (!currentShipment.get(id)) {
 		const shipmentData = {};
-		shipmentData['name'] = inventoryItems.get(id).name;
-		shipmentData['qty'] = 1;
+		const item = inventoryItems.get(id);
+		shipmentData['name'] = item.name;
+		shipmentData['qty'] = item.qty;
 		currentShipment.set(id, shipmentData);
 	}
 	displayShipmentTable();
 }
 
-function deleteFromShipment(id) {
-	currentShipment.delete(id);
-	displayShipmentTable();
-}
-
-function decreaseShipment(id) {
-	if (currentShipment.get(id).qty > 0) {
-		currentShipment.get(id).qty--;
-	}
-	displayShipmentTable()
-}
-
-function increaseShipment(id) {
-	if (currentShipment.get(id).qty < inventoryItems.get(id).qty) {
-		currentShipment.get(id).qty++;
-	}
-	displayShipmentTable();
-}
-
+// Generate shipment table
 function displayShipmentTable() {
-	let table = document.getElementById("shipment");
+	let table = document.getElementById("shipment-list");
 	table.innerHTML = '';
 	if (currentShipment) {
 		for (const [key, data] of currentShipment) {
-			let row = document.createElement('tr');
-
-			//data to display
-			let cellName = document.createElement('td');
-			let name = document.createTextNode(data.name);
+			// create item name column *same*
+			const cellName = document.createElement('td');
+			const name = document.createTextNode(data.name);
 			cellName.appendChild(name);
-			let cellQty = document.createElement('td');
-			let qty = document.createTextNode(data.qty);
-			cellQty.appendChild(qty);
+			// create item quantity column *same*
+			const cellQty = document.createElement('input')
+			cellQty.setAttribute('type', 'number');
+			cellQty.setAttribute('value', `${data.qty}`);
+			cellQty.setAttribute('min', '1');
+			cellQty.setAttribute('max', `${data.qty}`);
+			cellQty.addEventListener('change', checkBoundaries);
+			// create remove button
+			const removeButton = document.createElement('input');
+			removeButton.setAttribute('type', 'button');
+			removeButton.setAttribute('value', 'Remove');
+			removeButton.setAttribute('onclick', `removeFromShipment(${key})`);
+			// create action buttons column *same*
+			const cellActions = document.createElement('td');
+			cellActions.appendChild(removeButton);
+			// create row *same*
+			const row = document.createElement('tr');
 			row.appendChild(cellName);
 			row.appendChild(cellQty);
-
-			//delete button
-			const deleteButton = document.createElement('input');
-			deleteButton.setAttribute('type', 'button');
-			deleteButton.setAttribute('value', 'Remove');
-			deleteButton.setAttribute('onclick', 'deleteFromShipment(' + key + ')');
-			row.appendChild(deleteButton);
-
-			//increment button 
-			const increaseButton = document.createElement('input');
-			increaseButton.setAttribute('type', 'button');
-			increaseButton.setAttribute('value', 'Increase Qty');
-			increaseButton.setAttribute('onclick', 'increaseShipment(' + key + ')');
-			row.appendChild(increaseButton);
-
-			//decrement button 
-			const decreaseButton = document.createElement('input');
-			decreaseButton.setAttribute('type', 'button');
-			decreaseButton.setAttribute('value', 'Decrease Qty');
-			decreaseButton.setAttribute('onclick', 'decreaseShipment(' + key + ')');
-			row.appendChild(decreaseButton);
+			row.appendChild(cellActions);
 			table.appendChild(row);
 		}
 	}
 }
-displayInventoryTable();
 
+// Shipment table actions
+function removeFromShipment(id) {
+	currentShipment.delete(id);
+	displayShipmentTable();
+}
+
+function checkBoundaries(e) {
+	const currVal = Number(e.target.value);
+	if (currVal < e.target.min) {
+		e.target.value = 1;	
+	} else if (currVal > e.target.max) {
+		e.target.value = e.target.max;	
+	} else { 
+		return;
+	}
+}

@@ -9,47 +9,46 @@
 </head>
 
 <body>
-	<div id="inventory-create-input">
+	<div>
 		<h2>Create or Update Inventory Item</h2>
 		<form onsubmit="event.preventDefault(); itemFormSubmit();">
 			<input type="text" id="item-name" placeholder="Enter item name" required>
-			<input type="number" id="item-qty" placeholder="Enter quantity" required min=0>
+			<input type="number" id="item-qty" placeholder="Qty" required min='1' max='999'>
 			<input type="submit" class="button submit" value="Submit">
 		</form>
 	</div>
 	
-	<div id="inventory-list">
+	<div>
 		<h2>List of Inventory</h2>
-		<table class="list" id="inventory-list">
+		<table class='table' id="inventory">
 			<thead>
 				<tr>
-					<th>Item Name</th>
-					<th>Quantity</th>
+					<th id='item'>Item</th>
+					<th id='quantity'>Quantity</th>
+					<th id='actions'>Actions</th>
 				</tr>
 			</thead>
-			<tbody id='inventory-list-item'>
+			<tbody id='inventory-list'>
 			</tbody>
 		</table>
 	</div>
 
 	<div>
 		<h2>Current Shipment</h2>
-		<table class="list" id="shipment">
+		<table class='table' id="shipment">
 			<thead>
 				<tr>
-					<th>Item Name</th>
+					<th>Item</th>
 					<th>Quantity</th>
+					<th>Actions</th>
 				</tr>
 			</thead>
-			<tbody id='inventory-list-item'>
+			<tbody id='shipment-list'>
 			</tbody>
 		</table>
 	</div>
 
-
-
 	<script src="script.js"></script>
-
 </body>
 
 </html>
