@@ -107,9 +107,7 @@ function displayInventoryTable() {
 }
 
 function addToShipment(id){
-	console.log('adding to shipment', id);
 	if (!currentShipment.get(id)) {
-
 		const shipmentData = {};
 		shipmentData['name'] = inventoryItems.get(id).name;
 		shipmentData['qty'] = 1;
@@ -157,21 +155,21 @@ function displayShipmentTable() {
 			//delete button
 			const deleteButton = document.createElement('input');
 			deleteButton.setAttribute('type', 'button');
-			deleteButton.setAttribute('value', 'Delete');
+			deleteButton.setAttribute('value', 'Remove');
 			deleteButton.setAttribute('onclick', 'deleteFromShipment(' + key + ')');
 			row.appendChild(deleteButton);
 
 			//increment button 
 			const increaseButton = document.createElement('input');
 			increaseButton.setAttribute('type', 'button');
-			increaseButton.setAttribute('value', 'Increase');
+			increaseButton.setAttribute('value', 'Increase Qty');
 			increaseButton.setAttribute('onclick', 'increaseShipment(' + key + ')');
 			row.appendChild(increaseButton);
 
 			//decrement button 
 			const decreaseButton = document.createElement('input');
 			decreaseButton.setAttribute('type', 'button');
-			decreaseButton.setAttribute('value', 'Decrease');
+			decreaseButton.setAttribute('value', 'Decrease Qty');
 			decreaseButton.setAttribute('onclick', 'decreaseShipment(' + key + ')');
 			row.appendChild(decreaseButton);
 			table.appendChild(row);
