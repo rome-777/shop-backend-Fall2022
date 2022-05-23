@@ -4,7 +4,7 @@ let currentShipment = new Map();
 let prevShipments = new Map();
 let selectedItemId = null;
 
-// html actions
+// html form fields
 let nameField = document.getElementById("item-name");
 let qtyField = document.getElementById("item-qty");
 
@@ -62,9 +62,9 @@ function updateItem(data) {
 
 // Generate item inventory table
 function displayInventoryTable() {
-	let table = document.getElementById("inventory-list");
-	table.innerHTML = '';
-	if (inventoryItems) {
+	let tableRows = document.getElementById("inventory-list");
+	tableRows.innerHTML = '';
+	if (inventoryItems.size) {
 		for (const [key, data] of inventoryItems) {
 			// create item name column
 			const cellName = document.createElement('td');
@@ -94,13 +94,15 @@ function displayInventoryTable() {
 			cellActions.appendChild(deleteButton);
 			cellActions.appendChild(updateButton);
 			cellActions.appendChild(shipmentButton); 
-			// create row
+			// create row with data
 			const row = document.createElement('tr');
 			row.appendChild(cellName);
 			row.appendChild(cellQty);
 			row.appendChild(cellActions);
-			table.appendChild(row);
+			tableRows.appendChild(row);
 		}
+	} else {
+		tableRows.appendChild(noItemsDisplayed());
 	}
 }
 
@@ -127,44 +129,56 @@ function addToShipment(id){
 		const shipmentData = {};
 		const item = inventoryItems.get(id);
 		shipmentData['name'] = item.name;
-		shipmentData['qty'] = item.qty;
+		shipmentData['qty'] = 1;
 		currentShipment.set(id, shipmentData);
+	} else {
+		alert('Item already added to shipment')
 	}
 	displayShipmentTable();
 }
 
 // Generate shipment table
 function displayShipmentTable() {
-	let table = document.getElementById("shipment-list");
-	table.innerHTML = '';
-	if (currentShipment) {
+	let tableRows = document.getElementById("shipment-list");
+	tableRows.innerHTML = '';
+	if (currentShipment.size) {
+		// populate table
 		for (const [key, data] of currentShipment) {
-			// create item name column *same*
+			// create item name column
 			const cellName = document.createElement('td');
 			const name = document.createTextNode(data.name);
 			cellName.appendChild(name);
-			// create item quantity column *same*
+			// create item quantity column
 			const cellQty = document.createElement('input')
 			cellQty.setAttribute('type', 'number');
 			cellQty.setAttribute('value', `${data.qty}`);
 			cellQty.setAttribute('min', '1');
-			cellQty.setAttribute('max', `${data.qty}`);
-			cellQty.addEventListener('change', checkBoundaries);
+			cellQty.setAttribute('max', `${inventoryItems.get(key).qty}`);
+			cellQty.addEventListener('change',(e) => handleChange(key, e));
 			// create remove button
 			const removeButton = document.createElement('input');
 			removeButton.setAttribute('type', 'button');
 			removeButton.setAttribute('value', 'Remove');
 			removeButton.setAttribute('onclick', `removeFromShipment(${key})`);
-			// create action buttons column *same*
+			// create action buttons column
 			const cellActions = document.createElement('td');
 			cellActions.appendChild(removeButton);
-			// create row *same*
+			// create row with data
 			const row = document.createElement('tr');
 			row.appendChild(cellName);
 			row.appendChild(cellQty);
 			row.appendChild(cellActions);
-			table.appendChild(row);
+			tableRows.appendChild(row);
 		}
+		// create 'submit shipment button'
+		const submitShipmentButton = document.createElement('input');
+		submitShipmentButton.setAttribute('type', 'button');
+		submitShipmentButton.setAttribute('value', 'Submit Shipment');
+		submitShipmentButton.setAttribute('onclick', `submitShipment()`);
+		tableRows.appendChild(document.createElement('br'));
+		tableRows.appendChild(submitShipmentButton);
+	} else {
+		tableRows.appendChild(noItemsDisplayed());
 	}
 }
 
@@ -174,22 +188,45 @@ function removeFromShipment(id) {
 	displayShipmentTable();
 }
 
-function checkBoundaries(e) {
+function handleChange(key, e) {
 	const currVal = Number(e.target.value);
 	if (currVal < e.target.min) {
 		e.target.value = 1;	
-	} else if (currVal > e.target.max) {
-		e.target.value = e.target.max;	
-	} else { 
-		return;
 	}
+	if (currVal > e.target.max) {
+		e.target.value = e.target.max;	
+	}
+	currentShipment.get(key).qty = e.target.value;
 }
 
-function generateShipment() {
-	// #1 - generate curShip obj and save to prev ship
+function submitShipment() {
+	// store current shipment data
+	const id = generateId();
+	prevShipments.set(id, currentShipment);
+	// update inventory (delete inventory if qty is zero)
+	for (const [key, data] of currentShipment) {
+		const item = inventoryItems.get(key);
+		item.qty = item.qty - data.qty;
+		if (item.qty == 0) {
+			inventoryItems.delete(key);
+		}
+	}
+	// clear shipment table
+	currentShipment.clear();
+	displayInventoryTable();
+	displayShipmentTable();
 }
-
 
 function displayPrevShipments() {
 	// map prevShipments into ListItems and display in HTML
 }
+
+// build initial tables
+function noItemsDisplayed() {
+	const noItemsMsg = document.createElement('td');
+	const text = document.createTextNode('< empty >');
+	noItemsMsg.appendChild(text);
+	return noItemsMsg;
+}
+displayInventoryTable();
+displayShipmentTable();
