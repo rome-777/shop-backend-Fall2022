@@ -115,11 +115,11 @@ function handleEditButton(id) {
 }
 
 function deleteItem(id) {
-	if (!selectedItemId) {
+	if (!selectedItemId && !currentShipment.size) {
 		inventoryItems.delete(id);
 		displayInventoryTable();
 	} else {
-		alert('Cannot delete item while editing');
+		alert('Cannot delete item while editing or preparing shipment');
 		return;
 	}
 }
@@ -200,6 +200,10 @@ function handleChange(key, e) {
 }
 
 function submitShipment() {
+	if (selectedItemId) {
+		alert('Cannot submit shipment while editing');
+		return;
+	}
 	// store current shipment data
 	const id = generateId();
 	prevShipments.set(id, currentShipment);
